@@ -1,0 +1,9 @@
+http:
+  host: "localhost"
+  port1: "8046"
+  port2: "8047" 
+db:
+  host: "localhost"
+  port: "1521"
+  user: "system"
+  password: "tiger"
