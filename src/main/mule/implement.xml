@@ -126,19 +126,19 @@ var a = vars.wrongUSERID.USERID
 		<os:store doc:name="Store" doc:id="5769a30f-fe3c-45f6-a265-ffb2a22af526" key='#[now() as String {format:"yyyyMMddHHMMSS"}]' objectStore="Object_storeAsgmt8-sapi">
 					<os:value><![CDATA[#[payload.Message]]]></os:value>
 				</os:store>
-		<file:write doc:name="wrongUSERID's.csv" doc:id="33794e22-92cc-47cd-a03e-156d4131dc0a" config-ref="File_Config" path="C:\asgmt8-file-email\wrongUSERID's.csv" mode="APPEND">
+		<set-variable value='#[now() as String {format: "ddMMyyyy_hhmmss"} ++ ".csv"]' doc:name='fileName: now() as String {format: "ddMMyyyy_hhmmss"} ++ ".csv"' doc:id="bef4fcd4-79c3-4505-8a00-fc1ca1e5e89b" variableName="fileName"/>
+		<file:write doc:name='vars.fileName' doc:id="33794e22-92cc-47cd-a03e-156d4131dc0a" config-ref="File_Config" path='#[vars.fileName]'>
 				</file:write>
-		<file:read doc:name="wrongUSERID's.csv" doc:id="f464bdb7-e0bf-41c7-972d-9e23cde552f0" config-ref="File_Config" path="C:\asgmt8-file-email\wrongUSERID's.csv" />
+		<file:read doc:name="vars.fileName" doc:id="4e3e7ffe-6889-4492-a141-66ee86a80bc5" config-ref="File_Config" path="#[vars.fileName]"/>
 		<email:send doc:name="Send" doc:id="563f2d7e-62bd-45af-96d1-5d9ddd13026e" config-ref="Email_SMTP" fromAddress="rmhase@eniquesolutions.com" subject='#["response from flow project"]'>
 					<email:to-addresses>
 						<email:to-address value="rmhase@eniquesolutions.com" />
 					</email:to-addresses>
 					<email:body contentType="text/plain">
-						<email:content><![CDATA[#["please find the attached file"]]]></email:content>
+						<email:content><![CDATA[#["Please find the attached file"]]]></email:content>
 					</email:body>
-					<email:attachments><![CDATA[#[{
-	"wrongUSERID's.csv":payload
-	
+			<email:attachments ><![CDATA[#[{
+	"Attachment": payload
 }]]]></email:attachments>
 				</email:send>
 	</sub-flow>
