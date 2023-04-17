@@ -123,24 +123,4 @@ output application/json
     <flow name="get:\details:assignment_no_1-config">
 		<flow-ref doc:name="asgmt8-sapiFlow" doc:id="69d1c345-35df-4731-9486-55c34f1a59b5" name="asgmt8-sapiFlow"/>
     </flow>
-	<flow name="interfaceFlow" doc:id="27d06df9-c0c7-4a94-91c0-3a877cba92e6" >
-		<http:listener doc:name="HTTP:8047/retrievevalue" doc:id="e5b12e32-1c8c-4756-b856-8d27e238425c" config-ref="HTTP_Listener_config" path="/retrievevalue"/>
-		<os:retrieve-all-keys doc:name="Retrieve all keys" doc:id="9200a845-7dbc-4e5b-9f8a-d97e7dc4d6a8" objectStore="Object_storeAsgmt8-sapi"/>
-		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;[]]" doc:name="output" doc:id="861a269d-387e-40c0-9d2a-a8594effd20c" variableName="output"/>
-		<foreach doc:name="For Each" doc:id="5b5fee54-927d-4f3e-8362-befe7a36ab0d" >
-			<set-variable value="#[payload]" doc:name="vkey" doc:id="eb1f9943-b079-4b4b-93ee-56d62c6a35dc" variableName="vkey"/>
-			<os:retrieve doc:name="Retrieve" doc:id="983b4ddf-4d70-45f8-a4c4-2b3caa927e5a" key="#[vars.vkey]" objectStore="Object_storeAsgmt8-sapi"/>
-			<logger level="INFO" doc:name="payload" doc:id="2417b60a-32eb-46a3-90d8-ef9a642429cb" message="#[payload]"/>
-			<set-variable value='#[output application/json --- vars."output" + payload]' doc:name="vars.output + payload" doc:id="dfaae314-3af2-403c-b731-06909656295f" variableName="output"/>
-		</foreach>
-		<ee:transform doc:name="final payload" doc:id="c014009a-838e-40c8-87b3-1a5ffd92422a" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-(vars."output")]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="payload" doc:id="f56ac34d-440e-41b4-b10b-1eaf6a0b29d1" message="#[payload]"/>
-	</flow>
 </mule>

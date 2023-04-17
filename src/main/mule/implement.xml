@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:email="http://www.mulesoft.org/schema/mule/email"
-	xmlns:os="http://www.mulesoft.org/schema/mule/os"
-	xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<os:object-store name="Object_storeAsgmt8-sapi" doc:name="Object store" doc:id="465704de-d299-46a2-b8c0-d91608ea3a18" />
 	<flow name="asgmt8-sapiFlow" doc:id="54f4765a-1fd7-4fd3-992b-db2c139c1262" >
 		<set-variable value='#[{&#10;("USERID1" : attributes.queryParams.USERID1) if (attributes.queryParams.USERID1 != null),&#10;&#10;("USERID2" : attributes.queryParams.USERID2) if (attributes.queryParams.USERID2 != null),&#10;&#10;("USERID3" : attributes.queryParams.USERID3) if (attributes.queryParams.USERID3 != null)&#10;}]' doc:name="USERID" doc:id="4a45b375-2225-4376-8a61-c9b6046627c0" variableName="USERID" />
@@ -117,29 +118,46 @@ var a = vars.wrongUSERID.USERID
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-				<flow-ref doc:name="Flow Reference" doc:id="c54551c9-2e24-49ac-83e7-6caaa1bbb93d" name="objectStore-file-email"/>
+				<os:store doc:name="Store" doc:id="5769a30f-fe3c-45f6-a265-ffb2a22af526" key='#[now() as String {format: "ddMMyyyy_hhmm"}]' objectStore="Object_storeAsgmt8-sapi">
+					<os:value ><![CDATA[#[payload.Message]]]></os:value>
+				</os:store>
 				<logger level="INFO" doc:name="payload" doc:id="fc055fec-8869-42ce-a7ab-33b19ce5339c" message="#[payload]" />
 			</on-error-propagate>
 		</error-handler>
 	</flow>
-	<sub-flow name="objectStore-file-email" doc:id="be729a9b-f59a-4f8c-9dc3-ce3c22cdebeb" >
-		<os:store doc:name="Store" doc:id="5769a30f-fe3c-45f6-a265-ffb2a22af526" key='#[now() as String {format:"yyyyMMddHHMMSS"}]' objectStore="Object_storeAsgmt8-sapi">
-					<os:value><![CDATA[#[payload.Message]]]></os:value>
-				</os:store>
-		<set-variable value='#[now() as String {format: "ddMMyyyy_hhmmss"} ++ ".csv"]' doc:name='fileName: now() as String {format: "ddMMyyyy_hhmmss"} ++ ".csv"' doc:id="bef4fcd4-79c3-4505-8a00-fc1ca1e5e89b" variableName="fileName"/>
-		<file:write doc:name='vars.fileName' doc:id="33794e22-92cc-47cd-a03e-156d4131dc0a" config-ref="File_Config" path='#[vars.fileName]'>
+	<flow name="implementFlow" doc:id="1050b938-c1d9-410f-8c30-6839766ecef0" initialState="started">
+		<scheduler doc:name="0 0 4  * * ? PST (04:00 AM PST)" doc:id="8e5f7414-ada4-4d49-b70e-8b99176437fb" >
+			<scheduling-strategy >
+				<cron expression="0 0 4  * * ?" timeZone="PST" />
+			</scheduling-strategy>
+		</scheduler>
+		<os:retrieve-all-keys doc:name="Retrieve all keys from Object_storeAsgmt8-sapi" doc:id="85c642f2-8fcf-40c1-a914-b6eaaee0a7c0" objectStore="Object_storeAsgmt8-sapi" />
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;[]]" doc:name="output empty [] folder" doc:id="31c2ad22-78a9-45e5-ad68-fff62745c0d6" variableName="output" />
+		<foreach doc:name="For Each" doc:id="76fa6b6f-99c1-479d-a797-25057426b4ac">
+			<set-variable value="#[payload]" doc:name="vkey is payload" doc:id="b99248eb-9893-4a5d-8860-7e10c7b24cc2" variableName="vkey" />
+			<os:retrieve doc:name="Retrieve from ObjectStore with key vars.vkey" doc:id="7e069c19-3b61-4e8b-895a-a66ca2a5b110" key="#[vars.vkey]" objectStore="Object_storeAsgmt8-sapi" />
+			<set-variable value='#[output application/json --- vars."output" + payload]' doc:name="vars.output + payload" doc:id="7b64c931-016d-4172-bb04-3336539195e4" variableName="output" />
+		</foreach>
+		<ee:transform doc:name='final payload =(vars."output")' doc:id="19201b8a-ae8a-47cc-aa2c-71741928a701">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(vars."output")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value='#[now() as String {format: "ddMMyyyy_HHmmss"} ++ ".csv"]' doc:name='fileName: now() as String {format: "ddMMyyyy_hhmmss"} ++ ".csv"' doc:id="c1fbed23-567c-451f-9d55-a8ea456bd8fc" variableName="fileName" />
+		<file:write doc:name='now() as String {format: "ddMMyyyy_HHmmss"} ++ ".csv"' doc:id="33794e22-92cc-47cd-a03e-156d4131dc0a" config-ref="File_Config" path="#[vars.fileName]">
 				</file:write>
-		<file:read doc:name="vars.fileName" doc:id="4e3e7ffe-6889-4492-a141-66ee86a80bc5" config-ref="File_Config" path="#[vars.fileName]"/>
-		<email:send doc:name="Send" doc:id="563f2d7e-62bd-45af-96d1-5d9ddd13026e" config-ref="Email_SMTP" fromAddress="rmhase@eniquesolutions.com" subject='#["response from flow project"]'>
+		<file:read doc:name='now() as String {format: "ddMMyyyy_HHmmss"} ++ ".csv"' doc:id="4e3e7ffe-6889-4492-a141-66ee86a80bc5" config-ref="File_Config" path="#[vars.fileName]" />
+		<email:send doc:name="Send To and From rmhase@eniquesolutions.com" doc:id="563f2d7e-62bd-45af-96d1-5d9ddd13026e" config-ref="Email_SMTP" fromAddress="rmhase@eniquesolutions.com" subject='#["response from flow project"]'>
 					<email:to-addresses>
 						<email:to-address value="rmhase@eniquesolutions.com" />
 					</email:to-addresses>
 					<email:body contentType="text/plain">
 						<email:content><![CDATA[#["Please find the attached file"]]]></email:content>
 					</email:body>
-			<email:attachments ><![CDATA[#[{
-	"Attachment": payload
-}]]]></email:attachments>
+			<email:attachments><![CDATA[#[((now()>>"PST") as String {format: "ddMMyyyy_HHmmss"}  ++ ".csv"): payload]]]></email:attachments>
 				</email:send>
-	</sub-flow>
+	</flow>
 </mule>
