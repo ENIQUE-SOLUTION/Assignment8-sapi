@@ -12,7 +12,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<os:object-store name="Object_storeAsgmt8-sapi" doc:name="Object store" doc:id="465704de-d299-46a2-b8c0-d91608ea3a18" />
 	<flow name="asgmt8-sapiFlow" doc:id="54f4765a-1fd7-4fd3-992b-db2c139c1262" >
-		<set-variable value='#[{&#10;("USERID1" : attributes.queryParams.USERID1) if (attributes.queryParams.USERID1 != null),&#10;&#10;("USERID2" : attributes.queryParams.USERID2) if (attributes.queryParams.USERID2 != null),&#10;&#10;("USERID3" : attributes.queryParams.USERID3) if (attributes.queryParams.USERID3 != null)&#10;}]' doc:name="USERID" doc:id="4a45b375-2225-4376-8a61-c9b6046627c0" variableName="USERID" />
+		<set-variable value='#[{&#10;("USERID1" : attributes.queryParams.USERID1) if (attributes.queryParams.USERID1 != null),&#10;&#10;("USERID2" : attributes.queryParams.USERID2) if (attributes.queryParams.USERID2 != null),&#10;&#10;("USERID3" : attributes.queryParams.USERID3) if (attributes.queryParams.USERID3 != null)&#10;}]' doc:name="All USERID's and variable name USERID" doc:id="4a45b375-2225-4376-8a61-c9b6046627c0" variableName="USERID" />
 		<ee:transform doc:name="vars.USERID and empty json variable named output" doc:id="2fb9a76a-1684-4f49-b441-d902161b9e68">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -28,8 +28,8 @@ output application/json
 			</ee:variables>
 		</ee:transform>
 		<foreach doc:name="For Each" doc:id="287de523-985b-47cb-93e3-b65835b94f6b" >
-			<set-variable value='#[{&#10;("USERID" : payload.USERID1) if (payload.USERID1 != null),&#10;&#10;("USERID" : payload.USERID2) if (payload.USERID2 != null),&#10;&#10;("USERID" : payload.USERID3) if (payload.USERID3 != null)&#10;}]' doc:name="wrongUSERID" doc:id="ecaf8950-c679-49be-a3bb-666ad41e30d1" variableName="wrongUSERID" />
-			<db:select doc:id="bea1db9f-2d5f-4e8a-bf08-0d1e21907087" config-ref="Database_Config" doc:name="Select" >
+			<set-variable value='#[{&#10;("USERID" : payload.USERID1) if (payload.USERID1 != null),&#10;&#10;("USERID" : payload.USERID2) if (payload.USERID2 != null),&#10;&#10;("USERID" : payload.USERID3) if (payload.USERID3 != null)&#10;}]' doc:name="variable name wrongUSERID" doc:id="ecaf8950-c679-49be-a3bb-666ad41e30d1" variableName="wrongUSERID" />
+			<db:select doc:id="bea1db9f-2d5f-4e8a-bf08-0d1e21907087" config-ref="Database_Config" doc:name="select * from DETAILS" >
 				<db:sql ><![CDATA[select * from DETAILS where USERID IN(:USERID1,:USERID2,:USERID3)]]></db:sql>
 				<db:input-parameters ><![CDATA[#[{
 	USERID1: payload.USERID1,
@@ -45,8 +45,8 @@ output application/json
 payload]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
-			<validation:is-not-empty-collection doc:id="877bfe44-1360-4187-bcf0-946258b2a310" doc:name="Is not empty collection" />
-			<ee:transform doc:name="Transform to JSON payload" doc:id="4d201622-70e4-46d8-a3de-316b3308338e" >
+			<validation:is-not-empty-collection doc:id="877bfe44-1360-4187-bcf0-946258b2a310" doc:name="check payload" />
+			<ee:transform doc:name="Transform to JSON payload to pass dynamic query in database table" doc:id="4d201622-70e4-46d8-a3de-316b3308338e" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -79,7 +79,7 @@ output application/json
 (vars."output") ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<ee:transform doc:name="all filters on (payload)" doc:id="97be481e-c2d5-46e4-baad-01e3dbb4fd6a" >
+		<ee:transform doc:name="applied functions distinctBy, orderBy, groupBy on(payload)" doc:id="97be481e-c2d5-46e4-baad-01e3dbb4fd6a" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -87,7 +87,7 @@ output application/json
 (((flatten(payload) distinctBy $ orderBy ((item, index) -> item.USERID)) groupBy ((item, index) -> item.USERID)) groupBy ((value, key) -> "DEPTID" ++ value[1].DEPTID))]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="payload" doc:id="0c20bc58-d0fe-4f15-a6cb-3c03b46319d5" message="#[output application/json --- &#10;payload]" />
+		<logger level="INFO" doc:name="final json payload" doc:id="0c20bc58-d0fe-4f15-a6cb-3c03b46319d5" message="#[output application/json --- &#10;payload]" />
 		<error-handler >
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="52138b1e-89fc-4c5b-af2f-e24e3fbb1bc6" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION" >
 				<ee:transform doc:name="error, message and details" doc:id="508160ef-a2f7-4a79-bd38-1617850386ff" >
@@ -118,7 +118,7 @@ var a = vars.wrongUSERID.USERID
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-				<os:store doc:name="Store" doc:id="5769a30f-fe3c-45f6-a265-ffb2a22af526" key='#[now() as String {format: "ddMMyyyy_hhmm"}]' objectStore="Object_storeAsgmt8-sapi">
+				<os:store doc:name="Object_storeAsgmt8-sapi" doc:id="5769a30f-fe3c-45f6-a265-ffb2a22af526" key='#[now() as String {format: "ddMMyyyy_hhmm"}]' objectStore="Object_storeAsgmt8-sapi">
 					<os:value ><![CDATA[#[payload.Message]]]></os:value>
 				</os:store>
 				<logger level="INFO" doc:name="payload" doc:id="fc055fec-8869-42ce-a7ab-33b19ce5339c" message="#[payload]" />
