@@ -1,7 +1,6 @@
 http:
   host: "localhost"
-  port1: "8046"
-  port2: "8047" 
+  port: "8046"
 db:
   host: "localhost"
   port: "1521"

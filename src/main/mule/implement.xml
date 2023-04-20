@@ -12,7 +12,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<os:object-store name="Object_storeAsgmt8-sapi" doc:name="Object store" doc:id="465704de-d299-46a2-b8c0-d91608ea3a18" />
 	<flow name="asgmt8-sapiFlow" doc:id="54f4765a-1fd7-4fd3-992b-db2c139c1262" >
-		<set-variable value='#[{&#10;("USERID1" : attributes.queryParams.USERID1) if (attributes.queryParams.USERID1 != null),&#10;&#10;("USERID2" : attributes.queryParams.USERID2) if (attributes.queryParams.USERID2 != null),&#10;&#10;("USERID3" : attributes.queryParams.USERID3) if (attributes.queryParams.USERID3 != null)&#10;}]' doc:name="All USERID's and variable name USERID" doc:id="4a45b375-2225-4376-8a61-c9b6046627c0" variableName="USERID" />
+		<set-variable value='#[{&#10;("USERID1" : attributes.queryParams.USERID1) if (attributes.queryParams.USERID1 != null),&#10;&#10;("USERID2" : attributes.queryParams.USERID2) if (attributes.queryParams.USERID2 != null),&#10;&#10;("USERID3" : attributes.queryParams.USERID3) if (attributes.queryParams.USERID3 != null)&#10;}]' doc:name="variable USERID" doc:id="488894da-3c44-4a7e-bb50-928c0b121772" variableName="USERID"/>
 		<ee:transform doc:name="vars.USERID and empty json variable named output" doc:id="2fb9a76a-1684-4f49-b441-d902161b9e68">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
