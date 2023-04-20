@@ -18,11 +18,11 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 output application/json
 ---
 [
-("USERID1" : attributes.queryParams.USERID1) if (attributes.queryParams.USERID1 != ""),
+("USERID1" : attributes.queryParams.USERID1) if ((attributes.queryParams.USERID1 != "")and(attributes.queryParams.USERID1 != null)),
 
-("USERID2" : attributes.queryParams.USERID2) if (attributes.queryParams.USERID2 != ""),
+("USERID2" : attributes.queryParams.USERID2) if ((attributes.queryParams.USERID2 != "")and(attributes.queryParams.USERID2 != null)),
 
-("USERID3" : attributes.queryParams.USERID3) if (attributes.queryParams.USERID3 != "")
+("USERID3" : attributes.queryParams.USERID3) if ((attributes.queryParams.USERID3 != "")and(attributes.queryParams.USERID3 != null))
 ]]]></ee:set-payload>
 			</ee:message>
 			<ee:variables>
