@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
-http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
-    <flow name="assignment_no_1-main">
-        <http:listener config-ref="assignment_no_1-httpListenerConfig" path="/api/*" doc:name="HTTP:8046/api/details">
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="assignment_no_1-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8068" />
+    </http:listener-config>
+    <apikit:config name="assignment_no_1-config" api="resource::69195a45-219f-4c4f-a421-c2035797a327:assignment_no_1:1.0.0:raml:zip:assignment_no_1.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="bc65f504-4188-42e2-aa56-1210151aed1c" file="config.yaml" />
+	<flow name="assignment_no_1-main">
+        <http:listener config-ref="assignment_no_1-httpListenerConfig" path="/api/*" doc:name="HTTP:8061/api/details">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
@@ -121,6 +125,6 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\details:assignment_no_1-config">
-		<flow-ref doc:name="asgmt8-sapiFlow" doc:id="69d1c345-35df-4731-9486-55c34f1a59b5" name="asgmt8-sapiFlow"/>
+		<flow-ref doc:name="asgmt8-sapiFlow" doc:id="5728279d-3456-4f32-b578-cd565f2d04d5" name="asgmt8-sapiFlow"/>
     </flow>
 </mule>

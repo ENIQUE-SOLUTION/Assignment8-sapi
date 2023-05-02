@@ -1,8 +1,2 @@
 http:
-  host: "localhost"
-  port: "8046"
-db:
-  host: "localhost"
-  port: "1521"
-  user: "system"
-  password: "tiger"
+  port: "8068"

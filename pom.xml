@@ -3,14 +3,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.mycompany</groupId>
-	<artifactId>asgmt8-sapi</artifactId>
+	<artifactId>asgmt8-sapi-hyb-splunk</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
-	<name>asgmt8-sapi</name>
+	<name>asgmt8-sapi-hyb-splunk</name>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
 		<app.runtime>4.4.0-20230123</app.runtime>
 		<mule.maven.plugin.version>3.8.0</mule.maven.plugin.version>
 	</properties>
@@ -30,15 +32,16 @@
 				<configuration>
 					<cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
-						<username>RupeshMulesoft</username>
-						<password>RupeshMulesoft@2023</password>
+						<username>RupeshMulesoftMay</username>
+						<password>RupeshMulesoft2023may</password>
 						<environment>Sandbox</environment>
-						<applicationName>asgmt8-sapi</applicationName>
+						<applicationName>asgmt8-sapi-hyb-splunk</applicationName>
 						<workerType>Micro</workerType>
 						<workers>1</workers>
 						<muleVersion>4.4.0</muleVersion>
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
+					<classifier>mule-application</classifier>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -51,6 +54,18 @@
 						<sharedLibrary>
 							<groupId>com.mycompany</groupId>
 							<artifactId>ojdbc6_g-11.2.0.4</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.apache.activemq</groupId>
+							<artifactId>activemq-client</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.apache.activemq</groupId>
+							<artifactId>activemq-broker</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>org.apache.activemq</groupId>
+							<artifactId>activemq-kahadb-store</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
 				</configuration>
@@ -72,7 +87,7 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>93382256-cd13-44c5-ad14-4d8332cd727b</groupId>
+			<groupId>69195a45-219f-4c4f-a421-c2035797a327</groupId>
 			<artifactId>assignment_no_1</artifactId>
 			<version>1.0.0</version>
 			<classifier>raml</classifier>
@@ -97,9 +112,22 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>com.mycompany</groupId>
-			<artifactId>ojdbc6_g-11.2.0.4</artifactId>
-			<version>0.1</version>
+			<groupId>com.mulesoft.connectors</groupId>
+			<artifactId>mule-amqp-connector</artifactId>
+			<version>1.6.0</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.connectors</groupId>
+			<artifactId>mule-jms-connector</artifactId>
+			<version>1.8.4</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>69195a45-219f-4c4f-a421-c2035797a327</groupId>
+			<artifactId>json-logger</artifactId>
+			<version>2.1.0</version>
+			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
@@ -109,15 +137,35 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
+			<artifactId>mule-file-connector</artifactId>
+			<version>1.5.0</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-email-connector</artifactId>
 			<version>1.7.1</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>org.mule.connectors</groupId>
-			<artifactId>mule-file-connector</artifactId>
-			<version>1.5.0</version>
-			<classifier>mule-plugin</classifier>
+			<groupId>com.mycompany</groupId>
+			<artifactId>ojdbc6_g-11.2.0.4</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+			<version>5.15.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+			<version>5.15.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-kahadb-store</artifactId>
+			<version>5.15.4</version>
 		</dependency>
 	</dependencies>
 

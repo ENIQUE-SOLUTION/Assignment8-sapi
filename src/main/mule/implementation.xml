@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<os:object-store name="Object_storeAsgmt8-sapi" doc:name="Object store" doc:id="833e1d7b-2042-418b-929c-051d69d712c7" />
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="bdf2532d-e56f-47ad-8ca5-d6689bb709f5" environment="${mule.env}" >
+		<json-logger:external-destination >
+			<json-logger:jms-destination jmsConfigurationRef="JMS_Config" queueDestination="asgmt8-sapi-successUSERID" />
+		</json-logger:external-destination>
+	</json-logger:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="6551fc96-09d2-4ac6-89c0-0ee182cb876d" file="log.properties" />
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="dd5fb4fc-0e0f-444d-b733-e3d2f6ffe66d" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<jms:config name="JMS_Config1" doc:name="JMS Config" doc:id="a506821d-7cee-43a2-998f-fea9115e9a9b" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<json-logger:config name="JSON_Logger_Config1" doc:name="JSON Logger Config" doc:id="81afb090-bdd2-4482-bb09-4e74641438b1" environment="${mule.env}" >
+		<json-logger:external-destination >
+			<json-logger:jms-destination jmsConfigurationRef="JMS_Config1" queueDestination="asgmt8-sapi-wrongUSERID"/>
+		</json-logger:external-destination>
+	</json-logger:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="66a113af-858a-4b0a-a139-dc11c500ec5b" >
+		<db:oracle-connection host="localhost" user="system" password="tiger" instance="oracle" />
+	</db:config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="ddbe8bfb-0bd2-4c7e-8e7e-0bbc324b012f" >
+		<file:connection workingDir="C:\asgmt8-file-email" />
+	</file:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="d14bf09e-5a61-4660-959e-c1171afdbfa1" file="log.properties" />
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="88c8d918-a086-470f-8201-2d5a60e0a20c" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="rmhase@eniquesolutions.com" password="pudqliszqpxlbrma">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true"/>
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="asgmt8-sapiFlow" doc:id="86b78ae9-1005-434e-b83c-f264af8be998" >
+		<ee:transform doc:name="payload and empty json variable named output" doc:id="2728f7e4-a814-439f-97a0-dc3e519f4188">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+("USERID1" : attributes.queryParams.USERID1) if ((attributes.queryParams.USERID1 != "")and(attributes.queryParams.USERID1 != null)),
+
+("USERID2" : attributes.queryParams.USERID2) if ((attributes.queryParams.USERID2 != "")and(attributes.queryParams.USERID2 != null)),
+
+("USERID3" : attributes.queryParams.USERID3) if ((attributes.queryParams.USERID3 != "")and(attributes.queryParams.USERID3 != null))
+]]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="output"><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="877777fa-dec3-40be-b2ff-4523eda0c1d1" >
+			<set-variable value='#[{&#10;("USERID" : payload.USERID1) if (payload.USERID1 != null),&#10;&#10;("USERID" : payload.USERID2) if (payload.USERID2 != null),&#10;&#10;("USERID" : payload.USERID3) if (payload.USERID3 != null)&#10;}]' doc:name="variable name wrongUSERID" doc:id="15e12843-c591-43bd-a572-8e9c9c63b87c" variableName="wrongUSERID" />
+			<db:select doc:name="select * from DETAILS" doc:id="1a0d1586-8ce9-4d36-a4fc-17756846ff41" config-ref="Database_Config">
+				<db:sql ><![CDATA[select * from DETAILS where USERID IN(:USERID1,:USERID2,:USERID3)]]></db:sql>
+				<db:input-parameters ><![CDATA[#[{
+	USERID1: payload.USERID1,
+	USERID2: payload.USERID2,
+	USERID3: payload.USERID3
+}]]]></db:input-parameters>
+			</db:select>
+			<ee:transform doc:name="Transform to JSON payload" doc:id="8795962b-dc15-4ec5-ac4e-0ad3a1b3ae61" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<validation:is-not-empty-collection doc:id="c08dfed7-f243-44b2-a203-ac0583228411" doc:name="check payload" />
+			<ee:transform doc:name="Transform to JSON payload to pass dynamic query in database table" doc:id="466dc875-ec91-406f-8fee-7f5f0a280909" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload map(object, index) -> { 
+    query: "select USERID," ++ object.COLUMNNAMES ++ " from " ++ object.TABLENAME ++ " where USERID = '" ++ object.USERID ++ "'"
+})]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<parallel-foreach doc:name="Parallel For Each" doc:id="de4176aa-f5cb-4e27-980d-e2d8f395edb6" >
+				<db:select doc:id="3ee6f9fc-daf4-449e-b349-e2daeec30bd0" config-ref="Database_Config" doc:name="Select_from_both_tables" >
+					<db:sql ><![CDATA[#[payload."query"]]]></db:sql>
+				</db:select>
+			</parallel-foreach>
+			<ee:transform doc:name="flatten (payload..*payload)" doc:id="7304e82b-f991-4214-87a7-4f835dbca77d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten (payload..*payload)]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<set-variable value='#[output application/json --- vars."output" + payload]' doc:name="vars.output + payload" doc:id="39db4fc0-58da-4ce7-aab4-341e8f659f81" variableName="output" />
+		</foreach>
+		<ee:transform doc:name='vars."output" that is final payload' doc:id="cb550940-e135-401c-a44b-a7bbd0008cc3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+(vars."output") ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="applied functions distinctBy, orderBy, groupBy on(payload)" doc:id="3e5666fd-96c0-452b-a0c1-8f3d27c48fa0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+(((flatten(payload) distinctBy $ orderBy ((item, index) -> item.USERID)) groupBy ((item, index) -> item.USERID)) groupBy ((value, key) -> "DEPTID" ++ value[1].DEPTID))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:id="a41ec51e-ea42-4b85-9d95-851774e72d31" doc:name="success USERID's response" config-ref="JSON_Logger_Config" message="success USERID's response"/>
+		<logger level="INFO" doc:name="final json payload" doc:id="4cd81c4c-1868-4cce-b00c-ce54a4c37b43" message="#[output application/json --- &#10;payload]" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7c00163f-cc88-4ea1-adea-802e6ff9d5b5" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION" >
+				<ee:transform doc:name="error, message and details" doc:id="696a116d-605f-4387-a8d1-4e6c51e97a86" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   "error": error.errorType.identifier,
+   "message": "Incorrect username and password",
+   "detail": error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="payload" doc:id="5248dd0f-511b-4c78-ac01-9177cba87d88" message="#[payload]" />
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="05d1b8bd-d70e-4853-8d1e-53b3994337b2" type="ANY" >
+				<ee:transform doc:name="error and message" doc:id="70177292-1f17-417e-baf1-a504f0848d4c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var a = vars.wrongUSERID.USERID
+---
+{
+	"ERROR": error.errorType.identifier,
+	"Message": "No records available for UserID = " ++ a ++ ". Hence cannot proceed with the execution",
+	"detail": error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<json-logger:logger doc:name="wrong USERID's response" doc:id="00a8f34b-47a5-4c05-8ec9-014e0f8932d0" config-ref="JSON_Logger_Config1" message="wrong USERID's response"/>
+				<os:store doc:name="Object_storeAsgmt8-sapi" doc:id="6803ad03-78b4-44e8-bcdd-bb8ea721ba0f" key='#[now() as String {format: "ddMMyyyy_hhmm"}]' objectStore="Object_storeAsgmt8-sapi">
+					<os:value ><![CDATA[#[payload.Message]]]></os:value>
+				</os:store>
+				<logger level="INFO" doc:name="payload" doc:id="a5438915-f133-4f02-932f-bc2d29ce6202" message="#[payload]" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="implementFlow" doc:id="60898140-5d86-4cca-ace7-af4d3594a783" initialState="stopped">
+		<scheduler doc:name="0 0 4  * * ? PST (04:00 AM PST)" doc:id="26a4b2a1-0338-4705-9e44-244d0b5482b9" >
+			<scheduling-strategy >
+				<cron expression="0 0 4  * * ?" timeZone="PST" />
+			</scheduling-strategy>
+		</scheduler>
+		<os:retrieve-all-keys doc:name="Retrieve all keys from Object_storeAsgmt8-sapi" doc:id="0d687e59-1141-40f3-b7c3-3c8eced0db0d" objectStore="Object_storeAsgmt8-sapi" />
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;[]]" doc:name="output empty [] folder" doc:id="e9a55f8f-7279-482e-bd79-58827df1d323" variableName="output" />
+		<foreach doc:name="For Each" doc:id="7f9fc98f-eb7c-479a-a06e-a97a8e189770">
+			<set-variable value="#[payload]" doc:name="vkey is payload" doc:id="1f56e62e-ab8e-4544-8f00-660788971e44" variableName="vkey" />
+			<os:retrieve doc:name="Retrieve from ObjectStore with key vars.vkey" doc:id="825d7e00-e1b6-4015-976b-ad5f82a501af" key="#[vars.vkey]" objectStore="Object_storeAsgmt8-sapi" />
+			<set-variable value='#[output application/json --- vars."output" + payload]' doc:name="vars.output + payload" doc:id="bd5d9994-527b-4d32-b189-f0a26d5b5f9d" variableName="output" />
+		</foreach>
+		<ee:transform doc:name='final payload =(vars."output")' doc:id="98ff747f-59df-41a5-a226-8a469d15ff28">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(vars."output")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value='#[now() as String {format: "ddMMyyyy_HHmmss"} ++ ".csv"]' doc:name='fileName: now() as String {format: "ddMMyyyy_hhmmss"} ++ ".csv"' doc:id="39d5ecd6-2242-4283-bee2-57f191ca9e8b" variableName="fileName" />
+		<file:write doc:name='now() as String {format: "ddMMyyyy_HHmmss"} ++ ".csv"' doc:id="d6ee9068-2461-404f-aefa-1e4b9444a9c8" config-ref="File_Config" path="#[vars.fileName]">
+				</file:write>
+		<file:read doc:name='now() as String {format: "ddMMyyyy_HHmmss"} ++ ".csv"' doc:id="d7b5b7f8-7f23-49f6-a991-765e82db0549" config-ref="File_Config" path="#[vars.fileName]" />
+		<email:send doc:name="Send To and From rmhase@eniquesolutions.com" doc:id="0b6c32cc-da9c-41a5-be0c-eeb7c93c4062" config-ref="Email_SMTP" fromAddress="rmhase@eniquesolutions.com" subject='#["response from flow project"]' >
+			<email:to-addresses >
+				<email:to-address value="rmhase@eniquesolutions.com" />
+			</email:to-addresses>
+			<email:body contentType="text/plain" >
+				<email:content ><![CDATA[#["Please find the attached file"]]]></email:content>
+			</email:body>
+			<email:attachments ><![CDATA[#[((now()>>"PST") as String {format: "ddMMyyyy_HHmmss"}  ++ ".csv"): payload]]]></email:attachments>
+		</email:send>
+		<email:send doc:name="Send To and From rmhase@eniquesolutions.com" doc:id="48e614d5-846d-4e7b-a89d-590bb2062247" fromAddress="rmhase@eniquesolutions.com" subject='#["response from flow project"]' config-ref="Email_SMTP">
+			<email:to-addresses >
+				<email:to-address value="rmhase@eniquesolutions.com" />
+			</email:to-addresses>
+			<email:body contentType="text/plain" >
+				<email:content ><![CDATA[#["Please find the attached file"]]]></email:content>
+			</email:body>
+			<email:attachments ><![CDATA[#[((now()>>"PST") as String {format: "ddMMyyyy_HHmmss"}  ++ ".csv"): payload]]]></email:attachments>
+		</email:send>
+	
+</flow>
+</mule>
