@@ -40,7 +40,7 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
 	<file:config name="File_Config" doc:name="File Config" doc:id="ddbe8bfb-0bd2-4c7e-8e7e-0bbc324b012f" >
 		<file:connection workingDir="C:\asgmt8-file-email" />
 	</file:config>
-	<configuration-properties doc:name="Configuration properties" doc:id="d14bf09e-5a61-4660-959e-c1171afdbfa1" file="log.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="d14bf09e-5a61-4660-959e-c1171afdbfa1" file="config.yaml" />
 	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="88c8d918-a086-470f-8201-2d5a60e0a20c" >
 		<email:smtp-connection host="smtp.gmail.com" port="587" user="rmhase@eniquesolutions.com" password="pudqliszqpxlbrma">
 			<email:properties >
